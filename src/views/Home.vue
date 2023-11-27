@@ -1,55 +1,22 @@
 <script >
+import axios from "axios";
   export default {
     data: () => ({
-      students: [],
+      users: [],
       tab: null,
-      desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-          },
-        ],
+      
     }),
     methods: {
+
+    formatDate(birthDay){
+      const date = new Date(birthDay);
+      const onlyDate = date.toISOString().split('T')[0];
+      return onlyDate;
+    },
+
     getStudents() {
-      axios.get('http://localhost:8080/v1/students?detailed=true').then(res => {
-        this.students = res.data;
+      axios.get('http://localhost:8080/v1/users?detailed=true').then(res => {
+        this.users = res.data;
       }).catch(function (error) {
         // handle error on UI site
       })
@@ -118,10 +85,25 @@
           <thead>
             <tr>
               <th class="text-center">
-                Name
+                Nro
               </th>
               <th class="text-center">
-                Calories
+                Username
+              </th>
+              <th class="text-center">
+                Email
+              </th>
+              <th class="text-center">
+                First name
+              </th>
+              <th class="text-center">
+                Last name
+              </th>
+              <th class="text-center">
+                Age
+              </th>
+              <th class="text-center">
+                Birth day
               </th>
               <th class="text-center">
                 Actions
@@ -130,11 +112,16 @@
           </thead>
           <tbody>
             <tr
-              v-for="item in desserts"
+              v-for="item in users"
               :key="item.name"
             >
-              <td class="text-center">{{ item.name }}</td>
-              <td class="text-center">{{ item.calories }}</td>
+              <td class="text-center">{{ item.id }}</td>
+              <td class="text-center">{{ item.username }}</td>
+              <td class="text-center">{{ item.email }}</td>
+              <td class="text-center">{{ item.userDetail.firstName }}</td>
+              <td class="text-center">{{ item.userDetail.lastName }}</td>
+              <td class="text-center">{{ item.userDetail.age }}</td>
+              <td class="text-center">{{ formatDate(item.userDetail.birthDay) }}</td>
               <td class="text-center">
                 
                 <v-btn
@@ -142,7 +129,8 @@
                   variant="text"
                   icon="mdi-account-edit" 
                   elevation="1"     
-                  title="Edit"        
+                  title="Edit"     
+                  :to="{ path: '/users/' + item.id + '/edit' }"
                 ></v-btn>
 
                 <v-btn

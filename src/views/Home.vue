@@ -14,7 +14,7 @@ import axios from "axios";
       return onlyDate;
     },
 
-    getStudents() {
+    getUsers() {
       axios.get('http://localhost:8080/v1/users?detailed=true').then(res => {
         this.users = res.data;
       }).catch(function (error) {
@@ -22,19 +22,19 @@ import axios from "axios";
       })
     },
 
-    deleteStudentById(studentId) {
-        if (confirm('Are you sure, you want to delete this data?')) {
-          axios.delete(`http://localhost:8080/v1/students/${studentId}`).then(res => {
-            this.getStudents();
+    deleteUserById(userId) {
+        if (confirm('Are you sure, you want to delete this user?')) {
+          axios.delete(`http://localhost:8080/v1/users/${userId}`).then(res => {
+            this.getUsers();
           }).catch(function (error) {
-            // handle error on UI site
+            console.log(error);
           })
         }
       }
     },
 
     mounted() {
-      this.getStudents();
+      this.getUsers();
     }
   }
 </script>
@@ -48,6 +48,7 @@ import axios from "axios";
   </v-tabs>
   <v-window v-model="tab">
     <v-window-item v-for="n in 3" :key="n" :value="n">
+      
       <v-container fluid v-if="tab==1"> 
           <v-card class="mx-auto my-8" max-width="344" elevation="16">
             <v-card-item>
@@ -67,6 +68,8 @@ import axios from "axios";
             <v-btn
               class="ma-2"
               color="primary"
+              :to="{path:'/users'}"
+            
             >
               Add user
               <v-icon
@@ -138,7 +141,8 @@ import axios from "axios";
                   variant="text"
                   icon="mdi-trash-can-outline"
                   elevation="1"
-                  title="Delete"                    
+                  title="Delete"    
+                  @click="deleteUserById(item.id)"               
                 ></v-btn>
               </td>
             </tr>

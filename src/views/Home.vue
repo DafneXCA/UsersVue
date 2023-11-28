@@ -1,73 +1,40 @@
 <script >
+import axios from "axios";
   export default {
     data: () => ({
-      students: [],
+      users: [],
       tab: null,
-      desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-          },
-        ],
+      
     }),
     methods: {
-    getStudents() {
-      axios.get('http://localhost:8080/v1/students?detailed=true').then(res => {
-        this.students = res.data;
+
+    formatDate(birthDay){
+      const date = new Date(birthDay);
+      const onlyDate = date.toISOString().split('T')[0];
+      return onlyDate;
+    },
+
+    getUsers() {
+      axios.get('http://localhost:8080/v1/users?detailed=true').then(res => {
+        this.users = res.data;
       }).catch(function (error) {
         // handle error on UI site
       })
     },
 
-    deleteStudentById(studentId) {
-        if (confirm('Are you sure, you want to delete this data?')) {
-          axios.delete(`http://localhost:8080/v1/students/${studentId}`).then(res => {
-            this.getStudents();
+    deleteUserById(userId) {
+        if (confirm('Are you sure, you want to delete this user?')) {
+          axios.delete(`http://localhost:8080/v1/users/${userId}`).then(res => {
+            this.getUsers();
           }).catch(function (error) {
-            // handle error on UI site
+            console.log(error);
           })
         }
       }
     },
 
     mounted() {
-      this.getStudents();
+      this.getUsers();
     }
   }
 </script>
@@ -81,6 +48,7 @@
   </v-tabs>
   <v-window v-model="tab">
     <v-window-item v-for="n in 3" :key="n" :value="n">
+      
       <v-container fluid v-if="tab==1"> 
           <v-card class="mx-auto my-8" max-width="344" elevation="16">
             <v-card-item>
@@ -100,6 +68,8 @@
             <v-btn
               class="ma-2"
               color="primary"
+              :to="{path:'/users'}"
+            
             >
               Add user
               <v-icon
@@ -118,10 +88,25 @@
           <thead>
             <tr>
               <th class="text-center">
-                Name
+                Nro
               </th>
               <th class="text-center">
-                Calories
+                Username
+              </th>
+              <th class="text-center">
+                Email
+              </th>
+              <th class="text-center">
+                First name
+              </th>
+              <th class="text-center">
+                Last name
+              </th>
+              <th class="text-center">
+                Age
+              </th>
+              <th class="text-center">
+                Birth day
               </th>
               <th class="text-center">
                 Actions
@@ -130,11 +115,16 @@
           </thead>
           <tbody>
             <tr
-              v-for="item in desserts"
+              v-for="item in users"
               :key="item.name"
             >
-              <td class="text-center">{{ item.name }}</td>
-              <td class="text-center">{{ item.calories }}</td>
+              <td class="text-center">{{ item.id }}</td>
+              <td class="text-center">{{ item.username }}</td>
+              <td class="text-center">{{ item.email }}</td>
+              <td class="text-center">{{ item.userDetail.firstName }}</td>
+              <td class="text-center">{{ item.userDetail.lastName }}</td>
+              <td class="text-center">{{ item.userDetail.age }}</td>
+              <td class="text-center">{{ formatDate(item.userDetail.birthDay) }}</td>
               <td class="text-center">
                 
                 <v-btn
@@ -142,7 +132,8 @@
                   variant="text"
                   icon="mdi-account-edit" 
                   elevation="1"     
-                  title="Edit"        
+                  title="Edit"     
+                  :to="{ path: '/users/' + item.id + '/edit' }"
                 ></v-btn>
 
                 <v-btn
@@ -150,7 +141,8 @@
                   variant="text"
                   icon="mdi-trash-can-outline"
                   elevation="1"
-                  title="Delete"                    
+                  title="Delete"    
+                  @click="deleteUserById(item.id)"               
                 ></v-btn>
               </td>
             </tr>
